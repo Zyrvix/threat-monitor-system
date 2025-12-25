@@ -1,46 +1,66 @@
 # Technical Report: Threat Monitoring & Alert Management System
 
-## 1. Executive Summary
+## 1. Project Objective
 
-The Threat Monitor System is a modular, high-fidelity security platform designed to ingest, process, and manage security events in real-time. Built with a focus on scalability and production readiness, the system leverages a modern tech stack to provide automated alerting, comprehensive user auditing, and a premium administrative dashboard.
+This project implements a high-performance backend API system for a simplified Threat Monitoring & Alert Management Platform. Designed for "Cyethack Solutions", the platform specializes in ingesting security events from diverse sources (surveillance systems, SIEM tools, etc.) and providing an intelligent, role-based management layer for security analysts.
 
-## 2. Technical Architecture
+## 2. Technical Architecture & Tech Stack
 
-The system follows a container-first architecture, ensuring consistency across development and production environments.
+The system is built on a robust, scalable foundation:
 
-- **Backend**: Django 5.2 (Python 3.11) with Django REST Framework (DRF).
-- **Database**: PostgreSQL (Production) / SQLite (Local Development).
-- **Server**: Gunicorn (Production Gateway) for handling concurrent requests.
-- **Frontend**: Django MVT with Vanilla CSS, responsive design, and live notification polling.
-- **Infrastructure**: Docker & Docker Compose for orchestration.
+- **Core Framework**: Python 3.11 with Django 5.2.
+- **API Engine**: Django REST Framework (DRF) following RESTful best practices.
+- **Database**: PostgreSQL (Production) with optimized schema and indexed lookups.
+- **Deployment**: containerized via Docker for seamless environment parity.
+- **Gateways**: Gunicorn + WhiteNoise for high-concurrency production handling.
 
-## 3. Key Features
+## 3. Comprehensive Feature Implementation
 
-### 3.1 Automated Threat Detection
+### 3.1 Advanced Authentication & RBAC
 
-The system uses Django Signals to monitor incoming events. Any event categorized with 'High' or 'Critical' severity instantly triggers the creation of an automated Alert, notifying security analysts in real-time via the dashboard.
+The system implements secure **JWT-based authentication**, fulfilling both standard and bonus requirements.
 
-### 3.2 User Activity Auditing (Governance)
+- **Admin**: Full system access (Create, Read, Update, Delete).
+- **Analyst**: Focused read-only access to alerts and events, ensuring zero unauthorized mutations.
 
-Integrity is maintained through a custom auditing module. Every sensitive action—including authentication, registration, and status updates on security incidents—is logged with timestamps, IP addresses, and user-agent details.
+### 3.2 Intelligent Threat/Event Ingestion
 
-### 3.3 Unified API Layer
+A high-throughput API endpoint (`POST /events/ingest/`) handles incoming data streams.
 
-The API provides a consistent JSON structure for all responses. It includes full JWT authentication, field-level validation, and is documented via Swagger/OpenAPI.
+- **Data Capture**: source name, event type, severity (Low to Critical), and descriptions.
+- **Geo-Enrichment**: The system automatically resolves the source IP address into City and Country coordinates, providing critical intelligence on attack origins.
 
-## 4. Security Measures
+### 3.3 Automated Alert Generation & Management
 
-- **Role-Based Access Control (RBAC)**: Distinct permissions for Admins and Analysts.
-- **JWT Authentication**: Secured stateless communication for API endpoints.
-- **Environment Isolation**: Sensitive credentials are managed via environment variables and never exposed in version control.
+The system features an autonomous alert engine using Django Signals.
 
-## 5. Deployment Details
+- **Automation Logic**: Any event with **High or Critical** severity is instantly converted into an 'Open' Alert.
+- **Lifecycle Management**: Analysts can track alerts through **Open, Acknowledged, and Resolved** statuses.
+- **Filtering**: Native support for filtering by severity and status via query parameters.
 
-The application is deployed live on Render.com, utilizing a Dockerized environment integrated with a managed PostgreSQL instance. Static assets are served via WhiteNoise for optimal performance.
+### 3.4 Governance & Auditing
+
+A dedicated **User Activity Log** tracks every critical action (auth, registration, status shifts) with IP-level tracking and User-Agent fingerprints, ensuring full accountability.
 
 ---
 
-**Author**: Vinayagam
+## 4. Security & Performance (Compliance Checklist)
+
+- **Rate Limiting**: Implemented global throttling (1000/hr per user) to prevent brute-force and DDoS attempts.
+- **Input Validation**: Strict serializer-level validation protects against SQL injection and malformed payloads.
+- **Query Optimization**: Leveraged `select_related` and `prefetch_related` to eliminate N+1 database problems.
+- **Clean Code**: Adhered to strict separation of concerns (Serializers for logic, Views for control, Models for data).
+
+## 5. Bonus Enhancements Included
+
+- [x] **JWT Authentication** for stateless security.
+- [x] **Automated Unit Tests** for core ingestion and alerting logic.
+- [x] **Docker & Docker Compose** for one-click local setup.
+- [x] **Swagger & OpenAPI Documentation** available at `/api/v1/docs/`.
+- [x] **Live Cloud Deployment** on Render.com with PostgreSQL.
+
+---
+
+**Lead Developer**: Vinayagam
 **Date**: December 25, 2025
-**Project Repository**: [GitHub Link](https://github.com/Zyrvix/threat-monitor-system)
-**Live Environment**: [Live Application](https://threat-monitor-system.onrender.com/)
+**Production URL**: [https://threat-monitor-system.onrender.com/](https://threat-monitor-system.onrender.com/)
