@@ -31,6 +31,7 @@
                   "var jsonData = pm.response.json();",
                   "if (jsonData.data && jsonData.data.access) {",
                   "    pm.environment.set(\"access_token\", jsonData.data.access);",
+                  "    pm.environment.set(\"refresh_token\", jsonData.data.refresh);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -47,6 +48,19 @@
             },
             "url": { "raw": "{{base_url}}/accounts/login/", "host": ["{{base_url}}"], "path": ["accounts", "login", ""] }
           }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/accounts/refresh/", "host": ["{{base_url}}"], "path": ["accounts", "refresh", ""] }
+          }
         }
       ]
     },
@@ -54,7 +68,7 @@
       "name": "Events",
       "item": [
         {
-          "name": "Ingest",
+          "name": "Ingest Event",
           "request": {
             "method": "POST",
             "header": [
@@ -62,10 +76,73 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"source_name\": \"Firewall-HQ\",\n    \"event_type\": \"intrusion\",\n    \"severity\": \"high\",\n    \"description\": \"Local test attack.\"\n}",
+              "raw": "{\n    \"source_name\": \"Firewall-HQ\",\n    \"event_type\": \"intrusion\",\n    \"severity\": \"high\",\n    \"description\": \"Local test security event.\"\n}",
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{base_url}}/events/ingest/", "host": ["{{base_url}}"], "path": ["events", "ingest", ""] }
+          }
+        },
+        {
+          "name": "List Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { 
+              "raw": "{{base_url}}/events/?severity=high", 
+              "host": ["{{base_url}}"], 
+              "path": ["events", ""],
+              "query": [{ "key": "severity", "value": "high" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "List Alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "url": { 
+              "raw": "{{base_url}}/alerts/?status=open", 
+              "host": ["{{base_url}}"], 
+              "path": ["alerts", ""],
+              "query": [{ "key": "status", "value": "open" }]
+            }
+          }
+        },
+        {
+          "name": "Update Alert Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"acknowledged\",\n    \"resolution_notes\": \"Analyst is investigating this local alert.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/alerts/1/", "host": ["{{base_url}}"], "path": ["alerts", "1", ""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "API Schema",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/schema/", "host": ["{{base_url}}"], "path": ["schema", ""] }
           }
         }
       ]
