@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}User Activity Log | SecurityPulse{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.875rem; font-weight: 700;">User Activity Log</h1>
+        <p style="color: var(--text-secondary)">Audit trail of all professional actions taken by Admins and Analysts.</p>
+    </div>
+
+    <div class="table-card">
+        <div class="table-header">
+            <h3 style="font-weight: 600;">System Audit Trail</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Module</th>
+                    <th>Description</th>
+                    <th>IP Address</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">{{ activity.user.username }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary)">{{ activity.user.get_role_display }}</div>
+                    </td>
+                    <td>
+                        <span style="font-weight: 500; color: var(--accent-primary)">
+                            {{ activity.get_action_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span style="font-size: 0.875rem; color: var(--text-secondary)">
+                            {{ activity.get_module_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.875rem; max-width: 300px; white-space: normal;">
+                            {{ activity.description }}
+                        </div>
+                    </td>
+                    <td>
+                        <code style="font-size: 0.8rem;">{{ activity.ip_address|default:"-" }}</code>
+                    </td>
+                    <td style="color: var(--text-secondary); font-size: 0.8rem;">
+                        {{ activity.timestamp|date:"M d, Y" }}<br>
+                        {{ activity.timestamp|date:"H:i:s" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 4rem; color: var(--text-secondary)">
+                        No user activity recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if activities.has_other_pages %}
+    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+        {% if activities.has_previous %}
+            <a href="?page={{ activities.previous_page_number }}" class="btn" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); text-decoration: none;">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+        {% endif %}
+
+        <span style="color: var(--text-secondary); font-size: 0.875rem;">
+            Page {{ activities.number }} of {{ activities.paginator.num_pages }}
+        </span>
+
+        {% if activities.has_next %}
+            <a href="?page={{ activities.next_page_number }}" class="btn" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); text-decoration: none;">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

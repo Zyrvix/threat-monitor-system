@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Threat Monitor{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-brand">
+            <i class="fas fa-shield-halved"></i>
+            <span>SecurityPulse</span>
+          </div>
+        </div>
+
+        <nav class="nav-links">
+          <a
+            href="{% url 'dashboard_home' %}"
+            class="nav-item {% if request.resolver_match.url_name == 'dashboard_home' %}active{% endif %}"
+          >
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="{% url 'event_list' %}"
+            class="nav-item {% if request.resolver_match.url_name == 'event_list' %}active{% endif %}"
+          >
+            <i class="fas fa-list"></i>
+            <span>Events History</span>
+          </a>
+          <a
+            href="{% url 'alert_list' %}"
+            class="nav-item {% if request.resolver_match.url_name == 'alert_list' %}active{% endif %}"
+          >
+            <i class="fas fa-bell"></i>
+            <span>Alerts Management</span>
+            {% if unresolved_count > 0 %}
+            <span class="nav-badge" id="global-alert-badge"
+              >{{ unresolved_count }}</span
+            >
+            {% endif %}
+          </a>
+          <a
+            href="{% url 'activity_log' %}"
+            class="nav-item {% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}"
+          >
+            <i class="fas fa-history"></i>
+            <span>Activity Log</span>
+          </a>
+
+          <div
+            style="
+              margin-top: auto;
+              padding-top: 2rem;
+              border-top: 1px solid var(--border-color);
+            "
+          >
+            {% if user.is_staff %}
+            <a href="/admin/" class="nav-item">
+              <i class="fas fa-user-cog"></i>
+              <span>Admin Panel</span>
+            </a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="nav-item">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="main-wrapper">
+        <header class="top-header">
+          <div class="user-profile">
+            <div style="text-align: right">
+              <div style="font-weight: 600; font-size: 0.9rem">
+                {{ user.username }}
+              </div>
+              <div
+                style="
+                  font-size: 0.75rem;
+                  color: var(--text-secondary);
+                  text-transform: uppercase;
+                "
+              >
+                {{ user.role }}
+              </div>
+            </div>
+            <div
+              style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--accent-primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+              "
+            >
+              {{ user.username|first|upper }}
+            </div>
+          </div>
+        </header>
+
+        <div class="content-container">
+          {% if messages %} {% for message in messages %}
+          <div
+            style="padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; background: {% if message.tags == 'success' %}rgba(63, 185, 80, 0.15){% else %}rgba(248, 81, 73, 0.15){% endif %}; color: {% if message.tags == 'success' %}var(--accent-success){% else %}var(--accent-danger){% endif %}; border: 1px solid {% if message.tags == 'success' %}var(--accent-success){% else %}var(--accent-danger){% endif %};"
+          >
+            {{ message }}
+          </div>
+          {% endfor %} {% endif %} {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+
+    <script>
+      function updateAlertCount() {
+        fetch("/api/stats/")
+          .then((response) => response.json())
+          .then((data) => {
+            const badge = document.getElementById("global-alert-badge");
+            if (data.unresolved_count > 0) {
+              if (badge) {
+                badge.innerText = data.unresolved_count;
+              }
+            }
+          })
+          .catch((err) => console.error("Notification polling failed:", err));
+      }
+      setInterval(updateAlertCount, 10000);
+    </script>
+  </body>
+</html>

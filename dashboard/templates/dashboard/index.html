@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Overview | SecurityPulse{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.875rem; font-weight: 700;">Dashboard Overview</h1>
+        <p style="color: var(--text-secondary)">Monitor your system security and active threats in real-time.</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Events</span>
+            <span class="stat-value">{{ total_events }}</span>
+            <div style="font-size: 0.75rem; color: var(--accent-success);"><i class="fas fa-arrow-up"></i> Total Ingested</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--accent-warning);">
+            <span class="stat-label">Total Alerts</span>
+            <span class="stat-value">{{ total_alerts }}</span>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Automated Detections</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--accent-danger);">
+            <span class="stat-label">Unresolved Alerts</span>
+            <span class="stat-value" style="color: var(--accent-danger)">{{ open_alerts }}</span>
+            <div style="font-size: 0.75rem; color: var(--accent-danger);">Requires Attention</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+        <div class="table-card">
+            <div class="table-header">
+                <h3 style="font-weight: 600;">Recent Security Events</h3>
+                <a href="{% url 'event_list' %}" style="font-size: 0.875rem; color: var(--accent-primary); text-decoration: none;">View All History</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        <th>Severity</th>
+                        <th>Source</th>
+                        <th>Location</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in recent_events %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ event.get_event_type_display }}</td>
+                        <td>
+                            <span class="badge badge-{{ event.severity }}">
+                                {{ event.severity }}
+                            </span>
+                        </td>
+                        <td>{{ event.source_name }}</td>
+                        <td>
+                            {% if event.country %}
+                                {{ event.city }}, {{ event.country }}
+                            {% else %}
+                                <span style="color: var(--text-secondary)">Pending Geo...</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: var(--text-secondary); font-size: 0.8rem;">
+                            {{ event.timestamp|date:"M d, H:i" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-secondary)">
+                            No events ingested yet. Use the API to send telemetry.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3 style="font-weight: 600;">Threat Breakdown</h3>
+            </div>
+            <div style="padding: 1.5rem;">
+                {% for stat in severity_stats %}
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem;">
+                        <span style="text-transform: capitalize;">{{ stat.severity }} Threats</span>
+                        <span style="font-weight: 700;">{{ stat.count }}</span>
+                    </div>
+                    <div style="height: 8px; background: var(--bg-input); border-radius: 999px; overflow: hidden;">
+                        <div style="height: 100%; width: {{ stat.percentage }}%; background: {% if stat.severity == 'critical' or stat.severity == 'high' %}var(--accent-danger){% elif stat.severity == 'medium' %}var(--accent-warning){% else %}var(--accent-success){% endif %};"></div>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-secondary); text-align: center; padding: 1rem;">No data available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

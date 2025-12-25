@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Events History | SecurityPulse{% endblock %}
+
+{% block content %}
+<div class="animate-fade">
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <h1 style="font-size: 1.875rem; font-weight: 700;">Events History</h1>
+            <p style="color: var(--text-secondary)">Complete log of all ingested security telemetry and deep metadata.</p>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Severity</th>
+                    <th>Source & Device</th>
+                    <th>Location & Network</th>
+                    <th>IP Address</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 600;">{{ event.get_event_type_display }}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">
+                            {{ event.request_path }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-{{ event.severity }}">
+                            {{ event.severity }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500;">{{ event.source_name }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary)">
+                            {{ event.os_family }} | {{ event.browser_family }}
+                        </div>
+                    </td>
+                    <td>
+                        {% if event.country %}
+                            <div style="font-weight: 500;">{{ event.city }}, {{ event.country }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary)">{{ event.isp|truncatechars:20 }}</div>
+                        {% else %}
+                            <span style="color: var(--text-secondary)">Local Event</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <code>{{ event.ip_address }}</code>
+                        {% if event.is_vpn or event.is_proxy %}
+                            <div style="font-size: 0.7rem; color: var(--accent-warning);">
+                                <i class="fas fa-mask"></i> Masked IP
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td style="color: var(--text-secondary); font-size: 0.8rem;">
+                        {{ event.timestamp|date:"Y-m-d" }}<br>
+                        {{ event.timestamp|date:"H:i:s" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 4rem; color: var(--text-secondary)">
+                        No events found in the database.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if events.has_other_pages %}
+    <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+        {% if events.has_previous %}
+            <a href="?page={{ events.previous_page_number }}" class="btn" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); text-decoration: none;">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+        {% endif %}
+
+        <span style="color: var(--text-secondary); font-size: 0.875rem;">
+            Page {{ events.number }} of {{ events.paginator.num_pages }}
+        </span>
+
+        {% if events.has_next %}
+            <a href="?page={{ events.next_page_number }}" class="btn" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); text-decoration: none;">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
