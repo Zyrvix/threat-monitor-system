@@ -1,59 +1,67 @@
 # Threat Monitor System
 
-A backend system built with Django and Django REST Framework for ingesting security events and managing alerts. It includes automated alert generation based on severity and role-based access control.
+A professional security monitoring and alert management system built with Django and PostgreSQL.
 
-## Project Features
+## Features
 
-- User authentication using JWT.
-- Role-based access control (Admin and Analyst).
-- Security event ingestion API.
-- Automatic alert generation for High and Critical severity events.
-- Geolocation and device enrichment for ingested events.
-- Dashboard for viewing events and managing alerts.
-- Activity logging for administrative actions.
+- **Real-time Monitoring**: Ingest security events and automatically generate alerts based on severity.
+- **User Auditing**: Full audit trail of user actions (login, registration, alert changes).
+- **Interactive Dashboard**: Modern dark-mode UI with live notification polling.
+- **Production Ready**: Fully Dockerized with Gunicorn and WhiteNoise.
 
-## Setup Instructions
+## Quick Start (Docker)
 
-### Using Docker (Recommended)
+To run the entire system locally using Docker:
 
-1. Create a .env file in the root directory and add the required variables (see .env.example).
-2. Run the following command:
+1. **Clone the repository**
+2. **Create a `.env` file** in the root directory (use `.env.example` as a template).
+3. **Run with Docker Compose**:
+   ```bash
    docker-compose up --build
-3. Create a superuser to access the admin panel and dashboard:
-   docker-compose exec web python manage.py createsuperuser
+   ```
+   The application will be available at `http://localhost:8000`.
 
-### Manual Setup
+## Manual Installation
 
-1. Install dependencies:
+1. **Create Virtual Environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate on Windows
+   ```
+2. **Install Dependencies**:
+   ```bash
    pip install -r requirements.txt
-2. Run migrations:
+   ```
+3. **Run Migrations & Start Server**:
+   ```bash
    python manage.py migrate
-3. Start the server:
    python manage.py runserver
+   ```
 
-## API Endpoints
+## API Documentation
 
-- POST /api/v1/accounts/register/ - User registration
-- POST /api/v1/accounts/login/ - Login and get tokens
-- POST /api/v1/events/ingest/ - Ingest a security event
-- GET /api/v1/alerts/ - List alerts
-- PATCH /api/v1/alerts/{id}/ - Update alert status (Admin only)
+- **Swagger UI**: `/api/v1/docs/`
+- **ReDoc**: `/api/v1/schema/`
 
-## Assumptions
+## Deployment (Render.com)
 
-- High and Critical severity events always require an alert.
-- Analysts have read-only access to alerts for monitoring.
-- External IP Geolocation service is available for event enrichment.
-- System time is recorded in UTC.
+This project is optimized for deployment on Render:
 
-## Technical Details
-
-- Backend: Django, DRF
-- Database: PostgreSQL
-- Documentation: Swagger/OpenAPI 3.0
-- Containerization: Docker, Docker Compose
+1. **PostgreSQL**: Create a new Render PostgreSQL instance.
+2. **Web Service**:
+   - Environment: `Docker`
+   - Plan: `Free`
+   - **Environment Variables**: Add `DATABASE_URL` (Internal URL from your Postgres instance).
+   - **Docker Command**: `sh -c "python manage.py migrate && gunicorn threat_monitor.wsgi:application --bind 0.0.0.0:8000"`
 
 ## Testing
 
-Run the unit tests using:
-docker-compose exec web python manage.py test
+Run the automated test suite:
+
+```bash
+python manage.py test
+```
+
+---
+
+_Developed for Cyethack Solutions Pvt Ltd._
