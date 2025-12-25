@@ -1,6 +1,7 @@
 import logging
 import json
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Event
@@ -13,6 +14,10 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['event_type', 'severity', 'source_name']
+    search_fields = ['description', 'source_name']
+    ordering_fields = ['timestamp']
 
     def perform_create(self, serializer):
         request = self.request
