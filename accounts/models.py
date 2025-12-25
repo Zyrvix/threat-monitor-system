@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from constants import USER_ROLES
+from constants import USER_ROLES, ACTIVITY_ACTIONS, ACTIVITY_MODULES
 
 class CustomUser(AbstractUser):
     role = models.CharField(max_length=10, choices=USER_ROLES, default='analyst')
@@ -16,7 +16,6 @@ class CustomUser(AbstractUser):
 
 
 class UserActivity(models.Model):
-    from constants import ACTIVITY_ACTIONS, ACTIVITY_MODULES
     
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='activities')
     action = models.CharField(max_length=50, choices=ACTIVITY_ACTIONS)
