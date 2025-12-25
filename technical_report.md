@@ -61,6 +61,6 @@ A dedicated **User Activity Log** tracks every critical action (auth, registrati
 
 ---
 
-**Lead Developer**: Vinayagam
-**Date**: December 25, 2025
-**Production URL**: [https://threat-monitor-system.onrender.com/](https://threat-monitor-system.onrender.com/)
+**Developer**: Vinayagam
+**GitHub Repository**: [https://github.com/Zyrvix/threat-monitor-system](https://github.com/Zyrvix/threat-monitor-system)
+**Live Environment**: [https://threat-monitor-system.onrender.com/](https://threat-monitor-system.onrender.com/)
