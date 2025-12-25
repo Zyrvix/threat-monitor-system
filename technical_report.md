@@ -51,16 +51,12 @@ A dedicated **User Activity Log** tracks every critical action (auth, registrati
 - **Query Optimization**: Leveraged `select_related` and `prefetch_related` to eliminate N+1 database problems.
 - **Clean Code**: Adhered to strict separation of concerns (Serializers for logic, Views for control, Models for data).
 
-## 5. Bonus Enhancements Included
+## 5. Deployment & Containerization
 
-- [x] **JWT Authentication** for stateless security.
-- [x] **Automated Unit Tests** for core ingestion and alerting logic.
-- [x] **Docker & Docker Compose** for one-click local setup.
-- [x] **Swagger & OpenAPI Documentation** available at `/api/v1/docs/`.
-- [x] **Live Cloud Deployment** on Render.com with PostgreSQL.
+The system is fully containerized using **Docker** and **Docker Compose**, ensuring seamless local development and production-ready deployments. The production environment is hosted on Render.com utilizing Gunicorn and WhiteNoise for static file management and process handling.
 
 ---
 
 **Developer**: Vinayagam
-**GitHub Repository**: [https://github.com/Zyrvix/threat-monitor-system](https://github.com/Zyrvix/threat-monitor-system)
-**Live Environment**: [https://threat-monitor-system.onrender.com/](https://threat-monitor-system.onrender.com/)
+**GitHub**: https://github.com/Zyrvix/threat-monitor-system
+**Live Site**: https://threat-monitor-system.onrender.com/
